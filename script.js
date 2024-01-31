@@ -7,22 +7,22 @@ function handleInput(event) {
 }
 
 function answer(a) {
-    if (a == "help") {
+    if (a.toLowerCase() == "help") {
         sendCommand("$tree<br>$cls<br>$echo<br>$cd (file)<br>$color (color name)")
     }
-    else if (a == "cls") {
+    else if (a.toLowerCase() == "cls") {
         document.querySelector('.messages').innerHTML = ""
     }
-    else if (a == "tree") {
+    else if (a.toLowerCase() == "tree") {
         sendCommand("PC<br>├───.data<br>├───.attack<br>│&nbsp;&nbsp;  └─worm.exe<br>└───.defence")
     }
-    else if (a.substring(0, 5) == "color") {
+    else if (a.toLowerCase().substring(0, 5) == "color") {
         document.querySelector('.content').style.color = a.substring(6);
     }
-    else if (a.substring(0, 4) == "echo") {
+    else if (a.toLowerCase().substring(0, 4) == "echo") {
         sendCommand(a.substring(5))
     }
-    else if (a.substring(0, 2) == 'cd') {
+    else if (a.toLowerCase().substring(0, 2) == 'cd') {
         if (a.substring(3) == "User") {
             document.getElementById("path").innerText = "C:/User>";
         } else if (a.substring(3) == ".attack") {
