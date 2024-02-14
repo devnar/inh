@@ -1,12 +1,12 @@
-<head>
-    <title>AlgorihtmicWar</title>
+<head id="scriptAdd">
+    <title>I'm Not Hacker Terminal</title>
     <!-- Meta -->
     <meta name="viewport" content="width=device-width,  initial-scale=1, maximum-scale=1 user-scalable=0" />
     <meta name="description" content="Not alma uygulaması" />
     <meta name="copyright" content="NAR © 2021 Tüm hakları saklı" />
     <meta name="theme-color" content="#23b5b5" />
-    <meta property="og:title" content="AlgorihtmicWar" />
-    <meta property="og:description" content="description" />
+    <meta property="og:title" content="I'm Not Hacker" />
+    <meta property="og:description" content="It is an open source terminal site made by Nar." />
     <meta property="og:image" content="tikle.png" />
     <!-- /robots -->
     <meta name="robots" content="index,follow" />
@@ -15,7 +15,7 @@
     <link rel="shortcut icon" type="image/png" href="" />
     <link rel="stylesheet" href="style.css" />
     <!-- Script -->
-    <script src="script.js"></script>
+    <script src="main.js"></script>
     <script>
         function getParameterByName(name, url) {
             if (!url) url = window.location.href;
@@ -29,17 +29,66 @@
     </script>
 </head>
 <body>
-    <div class='terminal'>
-        <div class='content'>
-            <p class='command'>I'm Not Hacker [V 1.0]
-                (c) NAR.</p><br>
-            <div class='messages'></div><br>
+    <div class="terminal">
+        <div class="content">
+            <p class="command">I'm Not Hacker [V 2.0] (c) NAR.</p>
+            <div class="messages"></div>
+            <br />
             <table>
-            <tr>
-                <td><span id='path' style='cursor:default;'>C:/User> </span></td>
-                <td width='100%'><input type='text' class='input-box' onkeydown='handleInput(event)'></td>
-            </tr>
+                <tr>
+                    <td><span id="path" style="cursor: default;">C:/User> </span></td>
+                    <td width="100%"><input type="text" class="input-box" onkeydown="handleInput(event)" /></td>
+                </tr>
             </table>
         </div>
     </div>
 </body>
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyB0I6HaO1o7t66aRmLwN16e4gwL7aWWkAQ",
+    };
+    firebase.initializeApp(firebaseConfig);
+    sendMessage("Login...");
+
+    firebase
+        .auth()
+        .signInAnonymously()
+        .then((userCredential) => {
+            const user = userCredential.user;
+            sendMessage("Oturum açıldı:" + user.uid);
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            sendMessage("Oturum açma hatası:" + errorCode + errorMessage);
+        });
+
+    function handleInput(event) {
+        if (event.keyCode === 13) {
+            sendCommand(document.getElementById("path").textContent + event.target.value);
+            answer(event.target.value);
+            event.target.value = "";
+        }
+    }
+
+    function sendMessage(inputValue) {
+        const newLine = document.createElement("br");
+        const commandSpan = document.createElement("span");
+        commandSpan.classList.add("command");
+        commandSpan.innerHTML = inputValue;
+        document.querySelector(".messages").appendChild(newLine);
+        document.querySelector(".messages").appendChild(commandSpan);
+    }
+
+    function sendCommand(inputValue) {
+        const newLine = document.createElement("br");
+        const commandSpan = document.createElement("span");
+        commandSpan.classList.add("command");
+        commandSpan.innerHTML = "<br>" + inputValue;
+        document.querySelector(".messages").appendChild(newLine);
+        document.querySelector(".messages").appendChild(commandSpan);
+    }
+</script>
