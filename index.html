@@ -31,7 +31,7 @@
 <body>
     <div class="terminal">
         <div class="content">
-            <p class="command">I'm Not Hacker [V 2.0] (c) NAR.</p>
+            <p class="command">I'm Not Hacker [V 2.1] (c) NAR.</p>
             <div class="messages"></div>
             <br />
             <table>
@@ -58,12 +58,12 @@
         .signInAnonymously()
         .then((userCredential) => {
             const user = userCredential.user;
-            sendMessage("Oturum açıldı:" + user.uid);
+            sendMessage("success: " + user.uid);
         })
         .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
-            sendMessage("Oturum açma hatası:" + errorCode + errorMessage);
+            sendMessage("fail: " + errorCode + errorMessage);
         });
 
     function handleInput(event) {
