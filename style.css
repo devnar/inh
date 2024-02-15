@@ -6,7 +6,7 @@ body {
 
 .terminal {
   overflow-y: auto;
-  overflow-x:hidden;
+  overflow-x: hidden;
   overflow-wrap: break-word;
   top: 0;
   left: 0;
