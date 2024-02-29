@@ -45,7 +45,6 @@
 </body>
 <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
-
 <script>
     const firebaseConfig = {
         apiKey: "AIzaSyB0I6HaO1o7t66aRmLwN16e4gwL7aWWkAQ",
@@ -58,7 +57,8 @@
         .signInAnonymously()
         .then((userCredential) => {
             const user = userCredential.user;
-            sendMessage("success: " + user.uid);
+            localStorage.setItem("extension",false);
+            sendMessage("success: " + user.uid);  
         })
         .catch((error) => {
             const errorCode = error.code;
