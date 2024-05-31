@@ -1,3 +1,3 @@
-function toplama(a, b) {
-    return a + b;
-}
+topla: function (...args) {
+    return args.join(" ");
+},
