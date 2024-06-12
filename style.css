@@ -31,6 +31,7 @@ body {
 table,tr {width: 100%;}
 
 .input-box {
+  cursor: text;
   background-color: transparent;
   border: none;
   color: #ffffff;

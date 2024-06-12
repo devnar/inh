@@ -15,7 +15,6 @@
     <link rel="shortcut icon" type="image/png" href="https://img.icons8.com/?size=80&id=WbRVMGxHh74X&format=png" />
     <link rel="stylesheet" href="style.css" />
     <!-- Script -->
-    <script src="main.js"></script>
     <script>
         function getParameterByName(name, url) {
             if (!url) url = window.location.href;
@@ -27,17 +26,18 @@
             return decodeURIComponent(results[2].replace(/\+/g, " "));
         }
     </script>
+    <script src="main.js"></script>
 </head>
 <body>
     <div class="terminal">
         <div class="content">
-            <p class="command">I'm Not Hacker [V 2.2] (c) NAR.</p>
+            <p class="command">I'm Not Hacker [V 2.3] (c) NAR.</p>
             <div class="messages"></div>
             <br />
             <table>
                 <tr>
-                    <td><span id="path" style="cursor: default;">C:/User> </span></td>
-                    <td width="100%"><input type="text" class="input-box" onkeydown="handleInput(event)" /></td>
+                    <td><span id="path" style="cursor: default;">user@localhost:~$ </span></td>
+                    <td width="100%"><input id="commandInput" type="text" class="input-box"/></td>
                 </tr>
             </table>
         </div>
@@ -45,50 +45,4 @@
 </body>
 <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyB0I6HaO1o7t66aRmLwN16e4gwL7aWWkAQ",
-    };
-    firebase.initializeApp(firebaseConfig);
-    sendMessage("Login...");
-
-    firebase
-        .auth()
-        .signInAnonymously()
-        .then((userCredential) => {
-            const user = userCredential.user;
-            localStorage.setItem("extension",false);
-            sendMessage("success: " + user.uid);  
-        })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            sendMessage("fail: " + errorCode + errorMessage);
-        });
-
-    function handleInput(event) {
-        if (event.keyCode === 13) {
-            sendCommand(document.getElementById("path").textContent + event.target.value);
-            answer(event.target.value);
-            event.target.value = "";
-        }
-    }
-
-    function sendMessage(inputValue) {
-        const newLine = document.createElement("br");
-        const commandSpan = document.createElement("span");
-        commandSpan.classList.add("command");
-        commandSpan.innerHTML = inputValue;
-        document.querySelector(".messages").appendChild(newLine);
-        document.querySelector(".messages").appendChild(commandSpan);
-    }
-
-    function sendCommand(inputValue) {
-        const newLine = document.createElement("br");
-        const commandSpan = document.createElement("span");
-        commandSpan.classList.add("command");
-        commandSpan.innerHTML = "<br>" + inputValue;
-        document.querySelector(".messages").appendChild(newLine);
-        document.querySelector(".messages").appendChild(commandSpan);
-    }
-</script>
+<script src="script.js"></script>
