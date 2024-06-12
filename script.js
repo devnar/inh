@@ -1,26 +1,22 @@
 const firebaseConfig = {
     apiKey: "AIzaSyB0I6HaO1o7t66aRmLwN16e4gwL7aWWkAQ",
-    authDomain: "https://algoritmicwar.firebaseapp.com/__/auth/handler",
 };
 firebase.initializeApp(firebaseConfig);
-
-var provider = new firebase.auth.GithubAuthProvider();
+echo("login...")
 firebase
-  .auth()
-  .signInWithPopup(provider)
-  .then((result) => {
-    /** @type {firebase.auth.OAuthCredential} */
-    var credential = result.credential;
-    var token = credential.accessToken;
+    .auth()
+    .signInAnonymously()
+    .then((userCredential) => {
+        const user = userCredential.user;
+        localStorage.setItem("extension", false);
+        echo("success: " + user.uid);
+    })
+    .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        echo("fail: " + errorCode + errorMessage);
+    });
 
-    // The signed-in user info.
-    var user = result.user;
-    echo(user)
-  }).catch((error) => {
-    echo(error.message)
-});
-
-/* /// */
 document.getElementById("commandInput").addEventListener("keyup", function (event) {
     if (event.key === "Enter") {
         let inputValue = event.target.value;
