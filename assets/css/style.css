@@ -1,0 +1,65 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #000000;
+}
+
+.terminal {
+  overflow-y: auto;
+  overflow-x: hidden;
+  overflow-wrap: break-word;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  color: #ffffff;
+  font-family: monospace;
+  font-size: 16px;
+  grid-column-start: 1;
+  grid-column-end: 3;
+}
+
+.content {
+  padding: 10px;
+}
+
+.command {
+  display: inline;
+  margin: 0;
+}
+
+table,tr {width: 100%;}
+
+textarea {
+  display: none;
+  width: 100%;
+  height: 70%;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  outline: none;
+  color: white;
+  border-radius: 4px;
+  background-color: #f8f8f81a;
+  font-size: 16px;
+  resize: none;
+}
+
+.input-box {
+  cursor: text;
+  background-color: transparent;
+  border: none;
+  color: #ffffff;
+  font-family: monospace;
+  font-size: 16px;
+  outline: none;
+  width: 100%;
+}
+
+.input-box:focus {
+  outline: none;
+}
+
+#path {
+    font-size: 16px;
+    color: white;
+}
