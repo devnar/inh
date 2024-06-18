@@ -38,12 +38,23 @@ function readIntilize() {
 }
 
 function nano() {
+    echo("<button onclick='saveButton()'>ctrl + s</button> to save");
     document.querySelector("table").style.display = "none";
     document.querySelector("textarea").style.display = "block";
 }
 
+function saveButton() {
+    if (document.getElementById("editArea").style.display == "block") {
+        writeIntialize(document.getElementById("editArea").value);
+        document.querySelector("table").style.display = "block";
+        document.querySelector("textarea").style.display = "none";
+        echo("changes saved and reload...");
+        reload()
+    }
+}
+
 document.addEventListener('keydown', function(event) {
-    if (event.ctrlKey && event.key === 'c' && document.getElementById("editArea").style.display == "block") {
+    if (event.ctrlKey && event.key === 's' && document.getElementById("editArea").style.display == "block") {
         writeIntialize(document.getElementById("editArea").value);
         document.querySelector("table").style.display = "block";
         document.querySelector("textarea").style.display = "none";

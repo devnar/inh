@@ -4,6 +4,13 @@ body {
     background-color: #000000;
 }
 
+button {
+  background-color: #f8f8f81a;
+  border-radius: 100px;
+  border: 2px solid white;
+  color: white;
+}
+
 .terminal {
   overflow-y: auto;
   overflow-x: hidden;
