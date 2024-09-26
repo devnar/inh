@@ -7,7 +7,6 @@ firebase.initializeApp(firebaseConfig);
 function updateUI(user) {
     if (user) {
         firebase.database().ref('users/' + user.uid).on('value', (snapshot) => {
-            echo(snapshot.val().username + " Sign in");
             document.getElementById("path").innerText = "user@" + snapshot.val().username + ":~$";
         });
         firebase.database().ref('users/' + user.uid + "/f").on('value', (snapshot) => {
@@ -169,7 +168,7 @@ function getParameterByName(name, url) {
 
 function echo(inputValue, isPin) {
     if (isPin == true || isPin == "true") {
-        document.querySelector(".pin").innerHTML = "<br>" + "<span class='command'>" + inputValue + "</span>" + "<br>";
+        document.querySelector(".pin").innerHTML = "<br>" + "<pre class='command'>" + inputValue + "</pre>" + "<br>";
     } else {
         document.querySelector(".messages").innerHTML += "<br>" + "<span class='command'>" + inputValue + "</span>" + "<br>";
         document.getElementById("end").click()
