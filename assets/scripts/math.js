@@ -1,3 +1,7 @@
+function mathHelp() {
+    echo("add, subtract, multiply, divide, modulus, log, power, sqrt, abs");
+}
+
 function add(...numbers) {
     echo(numbers.reduce((acc, curr) => acc + Number(curr), 0));
 }
