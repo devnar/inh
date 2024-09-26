@@ -14,7 +14,7 @@ function updateUI(user) {
             document.getElementById("editArea").innerText = snapshot.val().initialize;
         });
     } else {
-        echo("login pls")
+        echo("sign pls (signIn / signUp)")
     }
 }
 
