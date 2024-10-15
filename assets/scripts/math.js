@@ -1,5 +1,5 @@
 function mathHelp() {
-    echo("add, subtract, multiply, divide, modulus, log, power, sqrt, abs");
+    echo("add, subtract, multiply, divide, modulus, log, power, sqrt, abs, isPrime");
 }
 
 function add(...numbers) {
@@ -47,15 +47,15 @@ function abs(number) {
 }
 
 function isPrime(number) {
-    if (sayi < 2) {
-        echo("Asal değil");
+    if (number < 2) {
+        echo("Not Prime");
         return;
     }
-    for (let i = 2; i <= Math.sqrt(sayi); i++) {
-        if (sayi % i === 0) {
-            echo("Asal değil");
+    for (let i = 2; i <= Math.sqrt(number); i++) {
+        if (number % i === 0) {
+            echo("Not Prime");
             return;
         }
     }
-    echo("Asal");
+    echo("Prime");
 }
