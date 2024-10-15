@@ -45,3 +45,17 @@ function sqrt(number) {
 function abs(number) {
     echo(Math.abs(number));
 }
+
+function isPrime(number) {
+    if (sayi < 2) {
+        echo("Asal değil");
+        return;
+    }
+    for (let i = 2; i <= Math.sqrt(sayi); i++) {
+        if (sayi % i === 0) {
+            echo("Asal değil");
+            return;
+        }
+    }
+    echo("Asal");
+}
