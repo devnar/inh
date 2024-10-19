@@ -1,5 +1,5 @@
 function mathHelp() {
-    echo("add, subtract, multiply, divide, modulus, log, power, sqrt, abs");
+    echo("add, subtract, multiply, divide, modulus, log, power, sqrt, abs, isPrime");
 }
 
 function add(...numbers) {
@@ -44,4 +44,18 @@ function sqrt(number) {
 
 function abs(number) {
     echo(Math.abs(number));
+}
+
+function isPrime(number) {
+    if (number < 2) {
+        echo("Not Prime");
+        return;
+    }
+    for (let i = 2; i <= Math.sqrt(number); i++) {
+        if (number % i === 0) {
+            echo("Not Prime");
+            return;
+        }
+    }
+    echo("Prime");
 }
