@@ -1,72 +1,56 @@
 body {
-    margin: 0;
-    padding: 0;
-    background-color: #000000;
-}
-
-button {
-  background-color: #f8f8f81a;
-  border-radius: 100px;
-  border: 2px solid white;
-  color: white;
+  margin: 0;
+  padding: 0;
+  background-color: #000000;
+  color: #ffffff;
+  font-family: monospace;
+  height: 100vh;
 }
 
 .terminal {
-  overflow-y: auto;
-  overflow-x: hidden;
-  overflow-wrap: break-word;
-  top: 0;
-  left: 0;
-  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: left;
   height: 100%;
   color: #ffffff;
-  font-family: monospace;
   font-size: 16px;
-  grid-column-start: 1;
-  grid-column-end: 3;
 }
 
 .content {
   padding: 10px;
-}
-
-.command {
-  display: inline;
-  margin: 0;
-}
-
-table,tr {width: 100%;}
-
-textarea {
-  display: none;
   width: 100%;
-  height: 70%;
-  padding: 12px 20px;
-  box-sizing: border-box;
-  outline: none;
+}
+
+.pin {
+  margin-bottom: 10px;
+}
+
+.messages {
+  overflow-y: auto;
+  max-height: 100vh;
+  white-space: pre-wrap;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.prompt {
+  margin-right: 8px;
   color: white;
-  border-radius: 4px;
-  background-color: #f8f8f81a;
-  font-size: 16px;
-  resize: none;
 }
 
 .input-box {
-  cursor: text;
   background-color: transparent;
   border: none;
   color: #ffffff;
-  font-family: monospace;
   font-size: 16px;
   outline: none;
-  width: 100%;
+  flex-grow: 1;
 }
 
 .input-box:focus {
   outline: none;
-}
-
-#path {
-    font-size: 16px;
-    color: white;
 }

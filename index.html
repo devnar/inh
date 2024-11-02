@@ -1,47 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head id="scriptAdd">
-        <title>I'm Not Hacker Terminal</title>
-        <!-- Meta -->
-        <meta name="viewport" content="width=device-width,  initial-scale=1, maximum-scale=1 user-scalable=0" />
-        <meta name="description" content="Not alma uygulaması" />
-        <meta name="copyright" content="NAR © 2021 Tüm hakları saklı" />
-        <meta name="theme-color" content="#23b5b5" />
-        <meta property="og:title" content="I'm Not Hacker" />
-        <meta property="og:description" content="It is an open source terminal site made by Nar." />
-        <meta property="og:image" content="https://devnar.github.io/logos/inh.png" />
-        <!-- /robots -->
-        <meta name="robots" content="index,follow" />
-        <meta name="revisit-after" content="1 days" />
-        <!-- Link -->
-        <link rel="shortcut icon" type="image/png" href="https://devnar.github.io/logos/inh.png" />
-        <link rel="stylesheet" href="assets/css/style.css" />
-        <!-- Script -->
-        <script src="assets/js/main.js"></script>
-        <script src="assets/scripts/math.js"></script>
-    </head>
-    <body>
-        <div class="terminal">
-            <div class="content">
-                <div class="pin">I'm Not Hacker [V 2.5] (c) NAR.</div>
-                <div class="messages"></div>
-                <br />
-                <textarea id="editArea"></textarea>
-                <table>
-                    <tr>
-                        <td><span id="path" style="cursor: default;">limit@newUser:~$ </span></td>
-                        <td width="100%">
-                            <input id="commandInput" type="text" class="input-box" />
-                        </td>
-                    </tr>
-                </table>
-                <a href="#end" id="end"></a>
+<head id="scriptAdd">
+    <title>I'm Not Hacker Terminal</title>
+    <!-- Meta -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <meta name="description" content="It is an open source terminal site" />
+    <meta name="copyright" content="NAR © 2021 Tüm hakları saklı" />
+    <meta name="theme-color" content="#23b5b5" />
+    <meta property="og:title" content="I'm Not Hacker" />
+    <meta property="og:description" content="It is an open source terminal site." />
+    <meta property="og:image" content="https://devnar.github.io/logos/inh.png" />
+    <!-- /robots -->
+    <meta name="robots" content="index,follow" />
+    <meta name="revisit-after" content="1 days" />
+    <!-- Link -->
+    <link rel="shortcut icon" type="image/png" href="https://devnar.github.io/logos/inh.png" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <!-- Script -->
+    <script src="assets/js/main.js"></script>
+</head>
+<body>
+    <div class="terminal">
+        <div class="content">
+            <div class="pin">I'm Not Hacker [V 3.0] (c) NAR.</div>
+            <div class="messages"></div><br>
+            <div class="input-container">
+                <span id="path" class="prompt">limit@newUser:~$</span>
+                <input id="commandInput" type="text" class="input-box" />
             </div>
+            <a href="#end" id="end"></a>
         </div>
-        <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
-    </body>
-    <script src="assets/js/script.js"></script>
-    <script id="initialize"></script>
+    </div>
+</body>
+<script src="assets/js/app.js"></script>
+<script id="initialize"></script>
 </html>
