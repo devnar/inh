@@ -3,17 +3,18 @@ function dmHelp() {
 }
 
 function dm() {
-    dmUser.forEach((username) => {
+    dmUser.forEach((u) => {
         let rawUrl = localStorage.getItem("userRawUrl");
+        const username = rawUrl.split("/")[3];
         const userFingerprint = localStorage.getItem("userFingerprint") + ".js";
 
-        rawUrl = rawUrl.replace(rawUrl.split("/")[3], username);
+        rawUrl = rawUrl.replace(rawUrl.split("/")[3], u);
         rawUrl = rawUrl.replace(userFingerprint, "dm.csv");
 
         fetch(rawUrl)
             .then((response) => {
                 if (!response.ok) {
-                    throw new Error(`Error fetching data for ${username}: ${response.statusText}`);
+                    throw new Error(`Error fetching data for ${u} ${response.statusText}`);
                 }
                 return response.text();
             })
@@ -30,7 +31,7 @@ function dm() {
 
                 if (userMessages.length > 0) {
                     userMessages.forEach((msg) => {
-                        echo(`${username}: ${msg}`);
+                        echo(`${u}: ${msg}`);
                     });
                 } else {
                     echo(`No messages found for ${username}`);
