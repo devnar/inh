@@ -1,5 +1,5 @@
 function mathHelp() {
-    echo("add, subtract, multiply, divide, modulus, log, power, sqrt, abs, isPrime");
+    echo("It is a script that allows you to perform mathematical operations.<br><br>add, subtract, multiply, divide, modulus, log, power, sqrt, abs, isPrime");
 }
 
 function add(...numbers) {
