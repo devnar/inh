@@ -6,6 +6,6 @@ Our goal is to foster a collaborative environment where users can contribute to 
 
 Additionally, we will be introducing a dedicated Plugins section, inviting everyone to contribute their unique functionalities and enhancements to the terminal.
 
-Join us in this exciting journey to build and innovate together! For more information and detailed guides, please visit our Wiki.
+Join us in this exciting journey to build and innovate together! For more information and detailed guides, please visit our [Wiki](https://github.com/devnar/imnothacker/wiki).
 
 Happy coding!
