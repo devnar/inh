@@ -35,27 +35,28 @@ function login() {
     
     if (!rawUrl) {
         const fingerprint = getFingerprint();
-        echo(`GitHub üzerinde '${fingerprint}.js' dosyasını oluşturun ve dosyanın raw URL'sini buraya girin.`);
+        echo(`Create '${fingerprint}.js' file in the "inh-user" repo on GitHub and enter your GitHub username there.`);
     } else {
-        const username = rawUrl.split("/")[4];
+        const username = rawUrl.split("/")[3];
         inhget(rawUrl);
         document.getElementById("path").innerText = `user@${username}:~$`;
     }
 }
 
-function saveRawUrl(rawUrl) {
+function saveRawUrl(user) {
     const existingUrl = localStorage.getItem("userRawUrl");
+    const fingerprint = getFingerprint();
 
     if (existingUrl) {
-        const confirmOverwrite = confirm("Bir URL zaten kayıtlı. Yenisiyle değiştirmek istediğinizden emin misiniz?");
+        const confirmOverwrite = confirm("A URL is already saved. Are you sure you want to replace it with a new one?");
         if (!confirmOverwrite) {
-            echo("URL değiştirilmedi.");
+            echo("URL was not changed.");
             return;
         }
     }
 
-    localStorage.setItem("userRawUrl", rawUrl);
-    echo("URL başarıyla kaydedildi. Profilin gelmesi için tekrar yükleyin.");
+    localStorage.setItem("userRawUrl", `https://raw.githubusercontent.com/${user}/inh-user/refs/heads/main/${fingerprint}.js`);
+    echo("URL saved successfully. Reload to see your profile.");
 }
 
 document.getElementById("commandInput").addEventListener("keyup", function (event) {
@@ -67,36 +68,34 @@ document.getElementById("commandInput").addEventListener("keyup", function (even
     }
 });
 
-// Komutları çalıştırma ve hata yakalama
+// Execute commands and catch errors
 function executeCommand(input) {
     const trimmedInput = input.trim();
     const rawUrl = localStorage.getItem("userRawUrl")
     let output = "";
     let functionCall = "";
-
-    if (trimmedInput.startsWith("https://raw.githubusercontent.com/")) {
-        output = "GitHub Raw URL işleme alındı.";
-        echo(output);
+    
+    if (!rawUrl) {
         saveRawUrl(trimmedInput)
         return;
     }
 
     if (trimmedInput.split(" ").length === 1) {
         functionCall = `${trimmedInput}()`;
-        output = `Fonksiyon çağrısı oluşturuldu: ${functionCall}`;
+        output = `Function call created: ${functionCall}`;
     } else {
         const parts = trimmedInput.split(" -");
         if (parts.length > 1) {
             const functionName = parts.shift();
             const parameters = parts;
             functionCall = `${functionName}("${parameters.join('", "')}")`;
-            output = `Fonksiyon çağrısı oluşturuldu: ${functionCall}`;
+            output = `Function call created: ${functionCall}`;
         } else {
-            output = "Geçersiz komut.";
+            output = "Invalid command.";
         }
     }
 
-    const username = rawUrl.split("/")[4];
+    const username = rawUrl.split("/")[3];
     echo(`user@${username}:~$ ${input}`);
 
     if (functionCall !== "") {
@@ -110,8 +109,7 @@ function executeCommand(input) {
     }
 }
 
-
-// Ekranda çıktı gösterme
+// Display output on screen
 function echo(inputValue, isPin) {
     if (isPin === true || isPin === "true") {
         document.querySelector(".pin").innerHTML =
