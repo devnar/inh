@@ -10,7 +10,7 @@ A dedicated Plugins section will soon be available, inviting everyone to contrib
 
 To get started with "I'm Not Hacker Terminal," set up your `inh-user` repository on GitHub. You can use our template repository to quickly initialize your setup:
 
-[inh-user Template Repository](https://github.com/new?template_name=inh-user&template_owner=devnar)
+[inh-user Template Repository](https://github.com/devnar/inh-user/fork)
 
 Simply fork this repository to create your own `inh-user` repository, which will serve as the base for your terminal scripts, DM functionality, and custom configurations.
 
