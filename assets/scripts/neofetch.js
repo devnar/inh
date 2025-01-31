@@ -118,6 +118,7 @@ _)      \.___.,|     .'
     
   
     const output = Neofetch.getASCII(cfg.os);
-    echo(output)
+    echo(output,true)
 }
-  
+
+neofetch()
