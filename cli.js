@@ -36,7 +36,7 @@ async function runPackage(name) {
 program
   .name('inh')
   .description(`Welcome to \"I'm Not Hacker\"! This is an open-source development platform designed as a web terminal, enabling developers and enthusiasts to create and enhance their own terminal experience by writing JavaScript code.`)
-  .version('1.0.0');
+  .version('1.2.0');
 
 program
   .command('status')
