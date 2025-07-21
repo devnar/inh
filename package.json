@@ -1,0 +1,28 @@
+{
+  "name": "inh",
+  "version": "1.0.0",
+  "description": "Welcome to \"I'm Not Hacker Terminal\"! This is an open-source development platform designed as a web terminal, enabling developers and enthusiasts to create and enhance their own terminal experience by writing JavaScript code.",
+  "main": "cli.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "inh": "./cli.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.10.0",
+    "child_process": "^1.0.2",
+    "commander": "^14.0.0",
+    "cors": "^2.8.5",
+    "fs-extra": "^11.3.0",
+    "inh": "^0.0.1",
+    "unzipper": "^0.12.3"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}
