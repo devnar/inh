@@ -10,7 +10,7 @@ To provide a platform where developers can create, share, and run their own term
 ## 🚀 Features
 
 * 🔌 **Modular Architecture**: Packages are fetched from GitHub as `.zip` files and executed in your terminal.
-* 🗃️ **Package Management**: Manage apps using intuitive commands like `install`, `uninstall`, `run`, `upload`, `list`, `status`, and `update`.
+* 🗃️ **Package Management**: Manage apps using intuitive commands like `install`, `uninstall`, `dev`, `upload`, `list` and `update`.
 * 🌐 **Firebase-Backed Server**: Uses Firebase Realtime Database for persistent, cloud-hosted package records.
 * 🛠️ **Self-Updating CLI**: Keep the CLI up to date using `inh update`.
 * 📦 **Custom Terminal Apps**: Easily create and share your own JavaScript-based terminal tools.
@@ -21,13 +21,13 @@ To provide a platform where developers can create, share, and run their own term
 ## 💻 CLI Commands
 
 ```bash
-inh <package>              # Run a previously installed package
-inh install <package>      # Download and install a package
-inh uninstall <package>    # Remove a package from your system
-inh list [--my|--all]      # List installed or available packages
-inh upload <github-url>    # Upload a new package to the central registry
-inh update                 # Update the CLI tool itself
-inh status                 # Check server availability and stats
+dev <folderPath>        # Run a local INH package from a folder path
+install|i <name>        # Download and install a package by name
+list [options]          # List packages
+status                  # Check if the remote registry server is online
+uninstall|u <name>      # Remove an installed package
+update                  # Update the CLI script from the GitHub source
+upload <githubRepoUrl>  # Upload a package to the registry using a GitHub repo URL
 ```
 
 ---
