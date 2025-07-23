@@ -22,25 +22,32 @@ async function runPackage(name) {
   const pkgPath = path.join(PKG_DIR, name);
 
   try {
-    const content = await fs.readFile(path.join(pkgPath, 'inh.json'), 'utf8');
-    const meta = JSON.parse(content);
-    const entry = path.join(pkgPath, meta.entry);
+    const pkgJsonPath = path.join(pkgPath, 'package.json');
 
-    const entryUrl = pathToFileURL(entry).href;
+    const content = await fs.readFile(pkgJsonPath, 'utf8');
+    const meta = JSON.parse(content);
+
+    const entryPath = path.join(pkgPath, meta.main || 'index.js');
+    if (!fs.existsSync(entryPath)) {
+      throw new Error(`Entry file not found: ${entryPath}`);
+    }
+
+    const entryUrl = pathToFileURL(entryPath).href;
+
     await import(entryUrl);
     console.log(`✅ Package "${name}" executed successfully.`);
   } catch (err) {
-    console.error(`\n[!] Error while running package "${name}":`, err);
+    console.error(`\n[!] Error while running package "${name}":`, err.message);
   }
 }
 
 program
   .name('inh')
-  .version('1.3.1')
+  .version('1.3.2')
   .usage('[command] or [packageName]')
   .description(`🧠 INH Terminal (I'm Not Hacker)
 A modular CLI platform to run JavaScript-based terminal packages.
-Install, run, upload, and build terminal apps with ease.
+Install, upload, and build terminal apps with ease.
 
 Visit https://github.com/devnar/inh/wiki for more information.`)
   .arguments('[packageName]')
@@ -90,8 +97,8 @@ program
       return false;
     }
 
-    if (isVersionLess(currentVersion, minimumVersion)) {
-      console.log(`✅ INH is already up to date (v1.3.1)`);
+    if (!isVersionLess(currentVersion, minimumVersion)) {
+      console.log(`✅ INH is already up to date (v${currentVersion})`);
       return;
     }
 
@@ -172,27 +179,33 @@ program
 
 // Command: upload
 program
-  .command('upload <githubUrl>')
-  .description('Upload a package to the registry')
-  .action(async (githubUrl) => {
+  .command('upload <githubRepoUrl>')
+  .description('Upload a package to the registry using a GitHub repo URL')
+  .action(async (githubRepoUrl) => {
     try {
-      let rawUrl = githubUrl;
-
-      if (!rawUrl.includes('raw.githubusercontent.com')) {
-        rawUrl = githubUrl
-          .replace(/^https?:\/\//, '')
-          .replace('github.com', 'raw.githubusercontent.com')
-          .replace(/\/$/, '') + '/main/inh.json';
-        rawUrl = 'https://' + rawUrl;
+      const match = githubRepoUrl.match(/^https:\/\/github\.com\/([^\/]+)\/([^\/]+)(\/|$)/);
+      if (!match) {
+        throw new Error('Invalid GitHub repository URL format. Expected: https://github.com/user/repo');
       }
 
-      console.log('📥 Fetching inh.json from:', rawUrl);
+      const [_, user, repo] = match;
+      const rawUrl = `https://raw.githubusercontent.com/${user}/${repo}/main/package.json`;
+
+      console.log('📥 Fetching package.json from:', rawUrl);
 
       const response = await axios.get(rawUrl);
-      const inhJson = response.data;
+      const pkgJson = response.data;
 
-      const res = await axios.post(`${API_BASE}/upload`, { packageData: inhJson });
-      console.log('✅ Package uploaded:', res.data.message);
+      if (!pkgJson.main) {
+        throw new Error('Missing "main" field in package.json (entry point required)');
+      }
+
+      if (!pkgJson.inh) {
+        throw new Error('This package is not marked as an INH package (inh: true is required).');
+      }
+
+      const res = await axios.post(`${API_BASE}/upload`, { repo: githubRepoUrl });
+      console.log('✅ Package uploaded successfully:', res.data.message);
     } catch (err) {
       console.error('❌ Upload failed:', err.response?.data || err.message);
     }
@@ -224,10 +237,12 @@ export function listMyPackages() {
 
   console.log('📦 Installed Packages:');
   dirs.forEach((pkg) => {
-    const metaPath = path.join(PKG_DIR, pkg, 'inh.json');
+    const metaPath = path.join(PKG_DIR, pkg, 'package.json');
     if (fs.existsSync(metaPath)) {
       const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
-      console.log(`- ${meta.name} (${meta.version})`);
+      if (meta.inh) {
+        console.log(`- ${meta.name} (${meta.version})`);
+      }
     } else {
       console.log(`- ${pkg} (missing metadata)`);
     }
