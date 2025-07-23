@@ -7,6 +7,8 @@ import fs from 'fs-extra';
 import path from 'path';
 import { execSync } from 'child_process';
 import { pathToFileURL } from 'url';
+import { fileURLToPath } from 'url';
+
 
 const program = new Command();
 const INH_DIR = path.join(process.env.HOME || process.env.USERPROFILE, '.inh');
@@ -34,12 +36,21 @@ async function runPackage(name) {
 
 program
   .name('inh')
+  .version('1.3.1')
+  .usage('[command] or [packageName]')
   .description(`🧠 INH Terminal (I'm Not Hacker)
 A modular CLI platform to run JavaScript-based terminal packages.
 Install, run, upload, and build terminal apps with ease.
 
 Visit https://github.com/devnar/inh/wiki for more information.`)
-  .version('1.3.0');
+  .arguments('[packageName]')
+  .action(async (packageName, cmdObj) => {
+    if (!packageName) {
+      program.help();
+      return;
+    }
+    await runPackage(packageName);
+  });
 
 // Command: status
 program
@@ -59,17 +70,38 @@ program
     }
   });
 
-// Command: update
 program
   .command('update')
   .description('Update the CLI script from the GitHub source')
   .action(async () => {
-    const remoteUrl = 'https://raw.githubusercontent.com/<your-username>/<repo-name>/main/cli.js';
-    const localPath = new URL(import.meta.url).pathname;
+    const currentVersion = program.version();
+    const minimumVersion = '1.3.2';
+
+    // Versiyon karşılaştırma için basit bir fonksiyon
+    function isVersionLess(v1, v2) {
+      const a1 = v1.split('.').map(Number);
+      const a2 = v2.split('.').map(Number);
+      for (let i = 0; i < Math.max(a1.length, a2.length); i++) {
+        const n1 = a1[i] || 0;
+        const n2 = a2[i] || 0;
+        if (n1 < n2) return true;
+        if (n1 > n2) return false;
+      }
+      return false;
+    }
+
+    if (isVersionLess(currentVersion, minimumVersion)) {
+      console.log(`✅ INH is already up to date (v1.3.1)`);
+      return;
+    }
+
+    // Güncelleme kodun buraya gelir...
+    const remoteUrl = 'https://raw.githubusercontent.com/devnar/inh/main/cli.js';
+    const localPath = fileURLToPath(import.meta.url);
 
     try {
       const res = await fetch(remoteUrl);
-      if (!res.ok) throw new Error('Failed to fetch updated CLI script.');
+      if (!res.ok) throw new Error(`Failed to fetch updated CLI script. Status: ${res.status}`);
 
       const updatedCode = await res.text();
       await fs.writeFile(localPath, updatedCode, 'utf8');
@@ -138,12 +170,6 @@ program
     }
   });
 
-// Command: run
-program
-  .command('run <name>')
-  .description('Run an installed package')
-  .action(runPackage);
-
 // Command: upload
 program
   .command('upload <githubUrl>')
@@ -166,7 +192,7 @@ program
       const inhJson = response.data;
 
       const res = await axios.post(`${API_BASE}/upload`, { packageData: inhJson });
-      console.log('✅ Package uploaded:', res.data);
+      console.log('✅ Package uploaded:', res.data.message);
     } catch (err) {
       console.error('❌ Upload failed:', err.response?.data || err.message);
     }
@@ -176,7 +202,7 @@ program
 program
   .command('list')
   .description('List packages')
-  .option('--my', 'Show locally installed packages')
+  .option('--my', 'Show locally installed packages (default)')
   .option('--all', 'Show all available packages from the registry')
   .action((options) => {
     if (options.my) {
