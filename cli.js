@@ -59,66 +59,40 @@ Visit https://github.com/devnar/inh/wiki for more information.`)
     await runPackage(packageName);
   });
 
-// Command: status
 program
-  .command('status')
-  .description('Check if the remote registry server is online')
-  .action(async () => {
+  .command('dev <folderPath>')
+  .description('Run a local INH package from a folder path')
+  .action(async (folderPath) => {
     try {
-      const res = await fetch(`${API_BASE}/status`);
-      if (!res.ok) throw new Error('Failed to connect');
+      const fullPath = path.resolve(folderPath);
+      const pkgJsonPath = path.join(fullPath, 'package.json');
 
-      const data = await res.json();
-      console.log(`✅ Server is online.`);
-      console.log(`📦 Package count: ${data.packageCount}`);
-      console.log(`🕒 Time: ${new Date(data.timestamp).toLocaleString()}`);
-    } catch (e) {
-      console.log('❌ Server is offline or unreachable.');
-    }
-  });
-
-program
-  .command('update')
-  .description('Update the CLI script from the GitHub source')
-  .action(async () => {
-    const currentVersion = program.version();
-    const minimumVersion = '1.3.2';
-
-    // Versiyon karşılaştırma için basit bir fonksiyon
-    function isVersionLess(v1, v2) {
-      const a1 = v1.split('.').map(Number);
-      const a2 = v2.split('.').map(Number);
-      for (let i = 0; i < Math.max(a1.length, a2.length); i++) {
-        const n1 = a1[i] || 0;
-        const n2 = a2[i] || 0;
-        if (n1 < n2) return true;
-        if (n1 > n2) return false;
+      if (!fs.existsSync(pkgJsonPath)) {
+        throw new Error('package.json not found in the specified path');
       }
-      return false;
-    }
 
-    if (!isVersionLess(currentVersion, minimumVersion)) {
-      console.log(`✅ INH is already up to date (v${currentVersion})`);
-      return;
-    }
+      const content = await fs.readFile(pkgJsonPath, 'utf8');
+      const meta = JSON.parse(content);
 
-    // Güncelleme kodun buraya gelir...
-    const remoteUrl = 'https://raw.githubusercontent.com/devnar/inh/main/cli.js';
-    const localPath = fileURLToPath(import.meta.url);
+      if (!meta.inh) {
+        console.warn(`This package is not marked as an INH package (missing "inh": true)`);
+      }
 
-    try {
-      const res = await fetch(remoteUrl);
-      if (!res.ok) throw new Error(`Failed to fetch updated CLI script. Status: ${res.status}`);
+      const entry = meta.main || 'index.js';
+      const entryPath = path.join(fullPath, entry);
 
-      const updatedCode = await res.text();
-      await fs.writeFile(localPath, updatedCode, 'utf8');
-      console.log('✅ CLI updated successfully.');
+      if (!fs.existsSync(entryPath)) {
+        throw new Error(`Entry file not found: ${entryPath}`);
+      }
+
+      const entryUrl = pathToFileURL(entryPath).href;
+      await import(entryUrl);
+
     } catch (err) {
-      console.error('❌ Update failed:', err.message);
+      console.error(`[!] Failed to run local package: ${err.message}`);
     }
   });
 
-// Command: install
 program
   .command('install <name>')
   .alias('i')
@@ -142,7 +116,6 @@ program
           .on('error', reject);
       });
 
-      // Flatten if there's a single inner directory
       const subDirs = await fs.readdir(targetPath);
       if (subDirs.length === 1) {
         const inner = path.join(targetPath, subDirs[0]);
@@ -150,7 +123,6 @@ program
         await fs.remove(inner);
       }
 
-      // Install dependencies if package.json exists
       if (fs.existsSync(path.join(targetPath, 'package.json'))) {
         console.log('[+] Installing dependencies...');
         execSync('npm install', { cwd: targetPath, stdio: 'inherit' });
@@ -162,7 +134,35 @@ program
     }
   });
 
-// Command: uninstall
+program
+  .command('list')
+  .description('List packages')
+  .option('-a, --all', 'Show all available packages from the registry')
+  .action((options) => {
+    if (options.all) {
+      listAllPackages();
+    } else {
+      listMyPackages();
+    }
+  });
+
+program
+  .command('status')
+  .description('Check if the remote registry server is online')
+  .action(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/status`);
+      if (!res.ok) throw new Error('Failed to connect');
+
+      const data = await res.json();
+      console.log(`✅ Server is online.`);
+      console.log(`📦 Package count: ${data.packageCount}`);
+      console.log(`🕒 Time: ${new Date(data.timestamp).toLocaleString()}`);
+    } catch (e) {
+      console.log('❌ Server is offline or unreachable.');
+    }
+  });
+
 program
   .command('uninstall <name>')
   .alias('u')
@@ -177,7 +177,51 @@ program
     }
   });
 
-// Command: upload
+program
+  .command('update')
+  .description('Update the CLI script from the GitHub source')
+  .action(async () => {
+    const currentVersion = program.version();
+    const minimumVersion = bumpVersion(currentVersion);;
+
+    function bumpVersion(version) {
+      const parts = version.split('.').map(Number);
+      parts[2] += 1;
+      return parts.join('.');
+    }
+
+    function isVersionLess(v1, v2) {
+      const a1 = v1.split('.').map(Number);
+      const a2 = v2.split('.').map(Number);
+      for (let i = 0; i < Math.max(a1.length, a2.length); i++) {
+        const n1 = a1[i] || 0;
+        const n2 = a2[i] || 0;
+        if (n1 < n2) return true;
+        if (n1 > n2) return false;
+      }
+      return false;
+    }
+
+    if (!isVersionLess(currentVersion, minimumVersion)) {
+      console.log(`✅ INH is already up to date (v${currentVersion})`);
+      return;
+    }
+
+    const remoteUrl = 'https://raw.githubusercontent.com/devnar/inh/main/cli.js';
+    const localPath = fileURLToPath(import.meta.url);
+
+    try {
+      const res = await fetch(remoteUrl);
+      if (!res.ok) throw new Error(`Failed to fetch updated CLI script. Status: ${res.status}`);
+
+      const updatedCode = await res.text();
+      await fs.writeFile(localPath, updatedCode, 'utf8');
+      console.log('✅ CLI updated successfully.');
+    } catch (err) {
+      console.error('❌ Update failed:', err.message);
+    }
+  });
+
 program
   .command('upload <githubRepoUrl>')
   .description('Upload a package to the registry using a GitHub repo URL')
@@ -211,21 +255,6 @@ program
     }
   });
 
-// Command: list
-program
-  .command('list')
-  .description('List packages')
-  .option('--my', 'Show locally installed packages (default)')
-  .option('--all', 'Show all available packages from the registry')
-  .action((options) => {
-    if (options.my) {
-      listMyPackages();
-    } else if (options.all) {
-      listAllPackages();
-    } else {
-      listMyPackages();
-    }
-  });
 
 export function listMyPackages() {
   if (!fs.existsSync(PKG_DIR)) {
