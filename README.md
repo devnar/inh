@@ -14,15 +14,15 @@ To provide a platform where developers can create, share, and run their own term
 * 🌐 **Firebase-Backed Server**: Uses Firebase Realtime Database for persistent, cloud-hosted package records.
 * 🛠️ **Self-Updating CLI**: Keep the CLI up to date using `inh update`.
 * 📦 **Custom Terminal Apps**: Easily create and share your own JavaScript-based terminal tools.
-* 🪄 **Simple Package Format**: Each package only needs an `inh.json` file for configuration.
+* 🪄 **Simple Package Format**: Each package only needs an `package.json` file for configuration.
 
 ---
 
 ## 💻 CLI Commands
 
 ```bash
+inh <package>              # Run a previously installed package
 inh install <package>      # Download and install a package
-inh run <package>          # Run a previously installed package
 inh uninstall <package>    # Remove a package from your system
 inh list [--my|--all]      # List installed or available packages
 inh upload <github-url>    # Upload a new package to the central registry
