@@ -7,8 +7,6 @@ import fs from 'fs-extra';
 import path from 'path';
 import { execSync } from 'child_process';
 import { pathToFileURL } from 'url';
-import { fileURLToPath } from 'url';
-
 
 const program = new Command();
 const INH_DIR = path.join(process.env.HOME || process.env.USERPROFILE, '.inh');
@@ -43,11 +41,10 @@ async function runPackage(name) {
 
 program
   .name('inh')
-  .version('1.3.2')
+  .version('1.4.0')
   .usage('[command] or [packageName]')
   .description(`🧠 INH Terminal (I'm Not Hacker)
 A modular CLI platform to run JavaScript-based terminal packages.
-Install, upload, and build terminal apps with ease.
 
 Visit https://github.com/devnar/inh/wiki for more information.`)
   .arguments('[packageName]')
@@ -102,35 +99,44 @@ program
       const res = await axios.get(`${API_BASE}/packages/${name}`);
       const pkg = res.data;
 
-      const zipUrl = `${pkg.repo}/archive/refs/heads/main.zip`;
-      const targetPath = path.join(PKG_DIR, name);
+      const branch = pkg.branch || 'main';
+      const subPath = pkg.path ? pkg.path.replace(/^\/|\/$/g, '') : '';
+      const repoName = pkg.repo.split('/').pop();
+      const zipUrl = `${pkg.repo}/archive/refs/heads/${branch}.zip`;
 
-      console.log(`[+] Downloading package "${name}"...`);
+      const tempExtractPath = path.join(PKG_DIR, '__temp__');
+      const finalInstallPath = path.join(PKG_DIR, name);
+
+      console.log(`[+] Downloading "${name}" from ${zipUrl}...`);
+
       const zipRes = await axios({ url: zipUrl, responseType: 'stream' });
-
-      await fs.emptyDir(targetPath);
+      await fs.emptyDir(tempExtractPath);
       await new Promise((resolve, reject) => {
         zipRes.data
-          .pipe(unzipper.Extract({ path: targetPath }))
+          .pipe(unzipper.Extract({ path: tempExtractPath }))
           .on('close', resolve)
           .on('error', reject);
       });
 
-      const subDirs = await fs.readdir(targetPath);
-      if (subDirs.length === 1) {
-        const inner = path.join(targetPath, subDirs[0]);
-        await fs.copy(inner, targetPath);
-        await fs.remove(inner);
+      const extractedRepoPath = path.join(tempExtractPath, `${repoName}-${branch}`);
+      const extractedSubPath = path.join(extractedRepoPath, subPath);
+
+      if (!fs.existsSync(extractedSubPath)) {
+        throw new Error(`Belirtilen path bulunamadı: ${extractedSubPath}`);
       }
 
-      if (fs.existsSync(path.join(targetPath, 'package.json'))) {
+      await fs.emptyDir(finalInstallPath);
+      await fs.copy(extractedSubPath, finalInstallPath);
+      await fs.remove(tempExtractPath);
+
+      if (fs.existsSync(path.join(finalInstallPath, 'package.json'))) {
         console.log('[+] Installing dependencies...');
-        execSync('npm install', { cwd: targetPath, stdio: 'inherit' });
+        execSync('npm install', { cwd: finalInstallPath, stdio: 'inherit' });
       }
 
       console.log(`[✓] Package "${name}" installed successfully.`);
     } catch (err) {
-      console.error('❌ Installation failed:', err.message || err);
+      console.error('❌ Installation failed:', err.response?.data || err.message || err);
     }
   });
 
@@ -143,6 +149,28 @@ program
       listAllPackages();
     } else {
       listMyPackages();
+    }
+  });
+
+program
+  .command('search <query>')
+  .description('Search for packages by name or description')
+  .action(async (query) => {
+    try {
+      const res = await axios.get(`${API_BASE}/search?q=${encodeURIComponent(query)}`);
+      const results = res.data;
+
+      if (results.length === 0) {
+        console.log('🔍 No packages found.');
+        return;
+      }
+
+      console.log(`🔍 Found ${results.length} package(s):\n`);
+      results.forEach(pkg => {
+        console.log(`- ${pkg.name}: ${pkg.description || 'No description'}`);
+      });
+    } catch (err) {
+      console.error('❌ Search failed:', err.message);
     }
   });
 
@@ -177,63 +205,27 @@ program
     }
   });
 
-program
-  .command('update')
-  .description('Update the CLI script from the GitHub source')
-  .action(async () => {
-    const currentVersion = program.version();
-    const minimumVersion = bumpVersion(currentVersion);;
-
-    function bumpVersion(version) {
-      const parts = version.split('.').map(Number);
-      parts[2] += 1;
-      return parts.join('.');
-    }
-
-    function isVersionLess(v1, v2) {
-      const a1 = v1.split('.').map(Number);
-      const a2 = v2.split('.').map(Number);
-      for (let i = 0; i < Math.max(a1.length, a2.length); i++) {
-        const n1 = a1[i] || 0;
-        const n2 = a2[i] || 0;
-        if (n1 < n2) return true;
-        if (n1 > n2) return false;
-      }
-      return false;
-    }
-
-    if (!isVersionLess(currentVersion, minimumVersion)) {
-      console.log(`✅ INH is already up to date (v${currentVersion})`);
-      return;
-    }
-
-    const remoteUrl = 'https://raw.githubusercontent.com/devnar/inh/main/cli.js';
-    const localPath = fileURLToPath(import.meta.url);
-
-    try {
-      const res = await fetch(remoteUrl);
-      if (!res.ok) throw new Error(`Failed to fetch updated CLI script. Status: ${res.status}`);
-
-      const updatedCode = await res.text();
-      await fs.writeFile(localPath, updatedCode, 'utf8');
-      console.log('✅ CLI updated successfully.');
-    } catch (err) {
-      console.error('❌ Update failed:', err.message);
-    }
-  });
 
 program
   .command('upload <githubRepoUrl>')
   .description('Upload a package to the registry using a GitHub repo URL')
-  .action(async (githubRepoUrl) => {
+  .option('-b, --branch <branch>', 'GitHub branch (default: main)', 'main')
+  .option('-p, --path <path>', 'Subdirectory path inside repo where package.json is located (optional)')
+  .action(async (githubRepoUrl, options) => {
     try {
-      const match = githubRepoUrl.match(/^https:\/\/github\.com\/([^\/]+)\/([^\/]+)(\/|$)/);
+      const match = githubRepoUrl.match(/^https:\/\/github\.com\/([^\/]+)\/([^\/]+)(\/)?$/);
       if (!match) {
         throw new Error('Invalid GitHub repository URL format. Expected: https://github.com/user/repo');
       }
 
-      const [_, user, repo] = match;
-      const rawUrl = `https://raw.githubusercontent.com/${user}/${repo}/main/package.json`;
+      const user = match[1];
+      const repo = match[2];
+      const branch = options.branch || 'main';
+      const rawPath = options.path || '';
+      const pathClean = rawPath.replace(/^\/|\/$/g, '');
+      const packageJsonPath = pathClean ? `${pathClean}/package.json` : 'package.json';
+
+      const rawUrl = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${packageJsonPath}`;
 
       console.log('📥 Fetching package.json from:', rawUrl);
 
@@ -248,12 +240,18 @@ program
         throw new Error('This package is not marked as an INH package (inh: true is required).');
       }
 
-      const res = await axios.post(`${API_BASE}/upload`, { repo: githubRepoUrl });
+      const res = await axios.post(`${API_BASE}/upload`, {
+        repo: githubRepoUrl,
+        branch,
+        path: pathClean,
+      });
+
       console.log('✅ Package uploaded successfully:', res.data.message);
     } catch (err) {
       console.error('❌ Upload failed:', err.response?.data || err.message);
     }
   });
+
 
 
 export function listMyPackages() {
